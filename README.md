@@ -13,4 +13,4 @@ This project is related to analysis of three dataset files: Business, Review and
 
 <h3><u>Implementation</u></h3>
 
-This is implemented using Databricks and Spark(Scala).
+This is implemented using Databricks, Spark and Scala.
