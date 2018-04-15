@@ -1,0 +1,15 @@
+val businessFile= sc.textFile("/FileStore/tables/cme102xn1508044920968/business.csv/")
+val reviewFile= sc.textFile("/FileStore/tables/cme102xn1508044920968/review__2_-b4b58.csv")
+val review=reviewFile.map(line=>line.split("\\^"))
+val business=businessFile.map(line=>line.split("\\^")).map(line=>(line(0),(line(1).toString,line.last.toString)))
+business.collect()
+val ratingsum=review.map(line=>(line(2),line(3).toDouble)).reduceByKey(_+_).distinct
+val businessidcount=review.map(line=>(line(2),1)).reduceByKey(_+_)
+val reviewjoininfo=ratingsum.join(businessidcount)
+reviewjoininfo.collect()
+val reviewinfo =reviewjoininfo.map(review=>(review._1,review._2._1/review._2._2))
+reviewinfo.collect()
+val finalresult= business.join(reviewinfo)
+finalresult.collect()
+val sortedresult=finalresult.map{case ((business_id),((full_address,categories),stars)) => (business_id, full_address, categories, stars) }
+sortedresult.sortBy(_._4,false).take(10).foreach(println)

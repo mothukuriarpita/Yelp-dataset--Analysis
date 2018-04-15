@@ -1,0 +1,19 @@
+
+/* Load the business.csv file from http://www.utdallas.edu/~axn112530/cs6350/yelp/ 
+Read the file by uploading it into Data in Databricks
+Copy paste the file location*/
+val businessRDD= sc.textFile("/FileStore/tables/yeu4gqq11508045845987/business.csv")
+val lines_business=businessRDD.map(line=>line.split("\\^"))
+/* Filter businesses whose location is in Stanford */
+val filter_business = lines_business.filter(line=>line(1).contains("Stanford")).map(line=>(line(0),line(1)))
+/* Load the review.csv file from http://www.utdallas.edu/~axn112530/cs6350/yelp/
+Read the file by uploading it into Data in Databricks
+Copy paste the file location */
+val reviewRDD=sc.textFile("/FileStore/tables/yeu4gqq11508045845987/review.csv")
+val lines_review=reviewRDD.map(line=>line.split("\\^"))
+val join_result = lines_review.map(line=>(line(2),(line(1),line(3))))
+/* Join both business and review RDD on business ID */
+val finalRDD=filter_business.join(join_result)
+finalRDD.collect()
+/* Print out the ratings given by each user for business located in Stanford */
+finalRDD.collect.foreach(line=>println(line._2._2))

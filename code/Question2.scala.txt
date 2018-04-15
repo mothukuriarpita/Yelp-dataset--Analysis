@@ -1,0 +1,20 @@
+val reviewRDD=sc.textFile("/FileStore/tables/yeu4gqq11508045845987/review.csv")
+val lines_review=reviewRDD.map(line=>line.split("\\^"))
+val userRDD=sc.textFile("/FileStore/tables/yeu4gqq11508045845987/user.csv")
+val lines_user=userRDD.map(line=>line.split("\\^"))
+val sum_review=lines_review.map(line=>(line(1),line(3).toDouble))
+val totalRDD=sum_review.reduceByKey((a,b)=>a+b).distinct
+val users_count=lines_review.map(line=>(line(1),1)).reduceByKey((a,b)=>a+b).distinct
+val finalRDD=totalRDD.join(users_count)
+finalRDD.collect()
+val review_average=finalRDD.map(a=>(a._1,a._2._1/a._2._2))
+val input_user=getArgument("Username","Tiffany R.")
+/* Fileter user data for the input user */
+val userData=lines_user.filter(line=>line(1).equals(input_user)).map(line=>(line(0).toString,line(1).toString))
+/* Join the userData RDD with review_average RDD */ 
+val result = review_average.join(userData)
+val total=result.count()
+val sum=result.map(line=>line._2._1).reduce(_+_)
+println(" Average review rating of "+input_user+" is :" +sum/total)
+/* Print out the average review ratings given by the user */
+result.collect.foreach(line=>println(line._1,line._2._1,line._2._2))

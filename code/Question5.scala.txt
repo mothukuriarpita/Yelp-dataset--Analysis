@@ -1,0 +1,9 @@
+val businessFile= sc.textFile("/FileStore/tables/cme102xn1508044920968/business.csv/")
+val reviewFile= sc.textFile("/FileStore/tables/cme102xn1508044920968/review__2_-b4b58.csv")
+businessFile.collect()
+val business_Filtered=(businessFile.map(line=>line.split("\\^")).filter(line => line(1).contains("TX")).map(line=>(line(0),1)))
+val business_Filtered=(businessFile.map(line=>line.split("\\^")).filter(line => line(1).contains("TX")).map(line=>(line(0),1)))
+val Review_Filtered=reviewFile.map(line=>line.split("\\^")).map(line=>(line(2),1)).reduceByKey(_+_)
+business_Filtered.join(Review_Filtered).collect()
+finalresult.foreach(line=>println(line._1,line._2._2))
+finalresult.length
